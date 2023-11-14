@@ -1,20 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Platform } from 'react-native';
+import AppLoading from 'expo-app-loading';
+import { useFonts } from 'expo-font';
+import { useState } from 'react';
+import { withStylesContext, useStylesContext } from './app/contexts/StylesContext';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+import WelcomeScreen from './app/screens/WelcomeScreen';
+
+function App() {
+    const {fontsLoaded} = useStylesContext();
+
+    if (!fontsLoaded) {
+        return <AppLoading />;
+    }
+
+    return (
+        <WelcomeScreen />
+    );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+// Wrap the application in contexts
+function withWrappers(WrappedComponent) {
+    return withStylesContext(
+        WrappedComponent
+    )
+}
+
+export default withWrappers(App);
