@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, TextInput, Dimensions, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, Dimensions } from 'react-native'
 import React, { useState } from 'react'
-import TextComponents from '../components/textComponents';
-import { Button } from 'react-native-web';
 
+import TextComponents from '../components/textComponents';
+import Interactables from '../components/interactableComponents';
+import SafeScreen from '../components/safeScreen';
 
 export default function WelcomeScreen() {
     const screenWidth = Dimensions.get("screen").width
@@ -10,7 +11,7 @@ export default function WelcomeScreen() {
     const [Password, usePassword] = useState(null);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeScreen style={styles.container}>
             <View style={styles.logo}>
                 <Image
                     source={{
@@ -18,27 +19,27 @@ export default function WelcomeScreen() {
                     height: screenWidth * .85,
                     uri: `https://picsum.photos/${screenWidth}`
                 }} />
-                <TextComponents.H1 style={{fontFamily: "Quicksand"}}>Login</TextComponents.H1>
+                <TextComponents.H1>Login</TextComponents.H1>
             </View>
             <View style={styles.fields}>
-                <TextInput style={styles.input}
-                    placeholder='Username'
-                    onChangeText={(value) => useUsername(value)}
+                <Interactables.TInputField
+                    style={styles.input}
+                    placeholder={"Username"}
+                    action={(value) => useUsername(value)}
                 />
-                <TextInput style={styles.input}
-                    placeholder='Password'
-                    onChangeText={(value) => usePassword(value)}
+                <Interactables.TInputField
+                    style={styles.input}
+                    placeholder={"Password"}
+                    action={(value) => usePassword(value)}
                 />
                 <View style={styles.buttons}>
-                    <TouchableOpacity>
-                        <Text>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Text>Register</Text>
-                    </TouchableOpacity>
+                    <Interactables.ButtonHighlight style={styles.button}>Login</Interactables.ButtonHighlight>
+                    <Interactables.ButtonOpacity style={styles.button}>Register</Interactables.ButtonOpacity>
                 </View>
+                <Text>Username: {Username}</Text>
+                <Text>Password: {Password}</Text>
             </View>
-        </SafeAreaView>
+        </SafeScreen>
     )
 }
 
@@ -49,9 +50,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'dodgerblue',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-        fontFamily: "Quicksand",
-        
     },
     logo: {
         flex: 1.5,  
@@ -72,14 +70,23 @@ const styles = StyleSheet.create({
         width: "80%",
         borderColor: "#777",
         alignSelf: "center",
-        padding: 20,
+        paddingTop: 15,
+        paddingBottom: 15,
+        paddingLeft: 10,
+        paddingRight: 10,
         margin: 10,
-        backgroundColor: "white"
+        backgroundColor: "white",
+        fontSize: 16,
+        fontFamily: "Quicksand-Regular"
     },
     buttons: {
         flexDirection: "row",
         width: "80%",
         marginTop: 10,
-        justifyContent: "space-around",
+        gap: 15,
+        justifyContent: "space-between",
+    },
+    button: {
+        flex: 1
     }
 })

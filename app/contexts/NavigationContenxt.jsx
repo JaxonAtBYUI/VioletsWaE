@@ -1,8 +1,6 @@
-import {
-  createContext, useContext, useEffect, useMemo, useState,
-} from 'react';
-import { useFonts } from 'expo-font';
-const StylesContext = createContext({});
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+
+const Navigation = createContext({});
 
 /**
  * @description A React component that provides a context to its child components.
@@ -25,28 +23,16 @@ const StylesContext = createContext({});
  *   // Use value here
  * }
  */
-function StylesContextProvider({ children }) {
-    const [fontsLoaded] = useFonts({
-        'Quicksand': require('../assets/fonts/Quicksand/Quicksand-VariableFont_wght.ttf'),
-        'Quicksand-Bold': require('../assets/fonts/Quicksand/static/Quicksand-Bold.ttf'),
-        'Quicksand-Light': require('../assets/fonts/Quicksand/static/Quicksand-Light.ttf'),
-        'Quicksand-Medium': require('../assets/fonts/Quicksand/static/Quicksand-Medium.ttf'),
-        'Quicksand-Regular': require('../assets/fonts/Quicksand/static/Quicksand-Regular.ttf'),
-        'Quicksand-SemiBold': require('../assets/fonts/Quicksand/static/Quicksand-SemiBold.ttf'),
-    });
-
-    const contextValue = useMemo(() => ({
-    fontsLoaded
-    }), [fontsLoaded]);
-    
-    useEffect(() => (console.log(`Fonts loaded: ${fontsLoaded}`)), [fontsLoaded])
-
-    return (
-        
-        <StylesContext.Provider value={contextValue}>
-        {children}
-        </StylesContext.Provider>
-    );
+function NavigationProvider({ children }) {
+  const [value, setValue] = useState('default value');
+  const contextValue = useMemo(() => ({
+    value, setValue,
+  }), [value, setValue]);
+  return (
+    <Navigation.Provider value={contextValue}>
+      {children}
+    </Navigation.Provider>
+  );
 }
 
 /**
@@ -63,13 +49,14 @@ function StylesContextProvider({ children }) {
  *   // ...
  * }
  */
-function useStylesContext() {
-  const context = useContext(StylesContext);
+function useNavigation() {
+  const context = useContext(Navigation);
   if (context === undefined) {
-    throw new Error('useStylesContext was used outside of its Provider');
+    throw new Error('useNavigation was used outside of its Provider');
   }
   return context;
 }
+
 /**
  * Higher-order component that wraps a component with the TemplateContextProvider.
  * This HOC provides the wrapped component with access to the template context,
@@ -77,19 +64,68 @@ function useStylesContext() {
  * @param {React.Component} WrappedComponent - The component to be wrapped with the NavigationContextProvider.
  * @returns {React.Component} - The wrapped component with access to the template context.
  */
-function withStylesContext(WrappedComponent) {
+function withNavigation(WrappedComponent) {
   return function NavigationComponent() {
     return (
-      <StylesContextProvider>
+      <NavigationProvider>
         <WrappedComponent />
-      </StylesContextProvider>
+      </NavigationProvider>
     );
   };
 }
 
 export {
-    StylesContext,
-    StylesContextProvider, 
-    useStylesContext,
-    withStylesContext,
+  Navigation, NavigationProvider, useNavigation, withNavigation,
 };
+
+/*
+stack
+navigate to - adds to stack
+
+page = useState(pages.login);
+
+navigate back - removes top of stack
+clear nav history 
+
+
+import screen from screen.jsx
+
+useEffect(() => {
+    usePageComponent(components[page])
+}, [page])
+
+pages = {
+    login: "login",
+    register: "register"
+}
+
+components = {
+    "screen":
+    "login": 
+
+}
+
+
+import { useNavigationContext } from NavigationContext.jsx
+
+export default function App() {
+
+    const { component } = useNavigationContext();
+
+    return(
+        <component />
+    )
+}
+
+import { useNavigationContext } from NavigationContext.jsx
+
+export default StupidScreen() {
+
+    const { navigateTo, pages } = useNavigationContext();
+
+    return (
+        <button onPress={() => {navigateTo(pages.Login)}}/> // navigation button
+    )
+}
+
+*/

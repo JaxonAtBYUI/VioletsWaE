@@ -4,7 +4,11 @@ import { useFonts } from 'expo-font';
 import { useState } from 'react';
 import { withStylesContext, useStylesContext } from './app/contexts/StylesContext';
 
+// Screens
 import WelcomeScreen from './app/screens/WelcomeScreen';
+import RegisterScreen from './app/screens/RegisterScreen';
+import AccountScreen from './app/screens/AccountScreen';
+
 
 function App() {
     const {fontsLoaded} = useStylesContext();
@@ -14,7 +18,7 @@ function App() {
     }
 
     return (
-        <WelcomeScreen />
+        <AccountScreen />
     );
 }
 
