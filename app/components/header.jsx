@@ -1,5 +1,7 @@
 import { View, SafeAreaView, StyleSheet, Image } from 'react-native'
 import TextComponents from './textComponents'
+import { useNavigation } from '../contexts/NavigationContenxt';
+import { TouchableWithoutFeedback } from 'react-native';
 
 
 /**
@@ -7,21 +9,24 @@ import TextComponents from './textComponents'
  * @param {string} title A boolean determining if the back button will be rendered.
  * @returns {React.Component}
  */
-export default function TopBar(props) {
-    const backButton = props.backButton
-    const title = props.title
+export default function Header(props) {
+    const backButton = props.backButton;
+    const title = props.title;
 
+    const { navigateBack } = useNavigation();
 
     return (
         <View style={styles.topBarContainer}>
             {backButton ? 
             <View style={styles.backbuttonContainer}>
-                <Image
-                source={{
-                    width: 40,
-                    height: 40,
-                    uri: `https://picsum.photos/${40}`
-                }} />
+                <TouchableWithoutFeedback onPress={() => navigateBack()}>
+                    <Image
+                    source={{
+                        width: 40,
+                        height: 40,
+                        uri: `https://picsum.photos/${40}`
+                    }} />
+                </TouchableWithoutFeedback>    
             </View> :
             null}
             <TextComponents.H1 style={styles.title}>{props.title}</TextComponents.H1>

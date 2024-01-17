@@ -1,33 +1,36 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, Platform } from 'react-native';
 import AppLoading from 'expo-app-loading';
-import { useFonts } from 'expo-font';
-import { useState } from 'react';
-import { withStylesContext, useStylesContext } from './app/contexts/StylesContext';
 
-// Screens
-import WelcomeScreen from './app/screens/WelcomeScreen';
-import RegisterScreen from './app/screens/RegisterScreen';
-import AccountScreen from './app/screens/AccountScreen';
+import { components } from './app/dictionaries/components';
+
+// Contexts
+import { withStylesContext, useStylesContext } from './app/contexts/StylesContext';
+import { withNavigation, useNavigation } from './app/contexts/NavigationContenxt';
+
 
 
 function App() {
-    const {fontsLoaded} = useStylesContext();
+    const { page } = useNavigation();
 
+    const {fontsLoaded} = useStylesContext();
+    
+    const Component = components[page]
+    
     if (!fontsLoaded) {
         return <AppLoading />;
     }
-
     return (
-        <AccountScreen />
+        <Component />
     );
 }
 
 
 // Wrap the application in contexts
 function withWrappers(WrappedComponent) {
-    return withStylesContext(
-        WrappedComponent
-    )
+    return withNavigation (
+        withStylesContext(
+            WrappedComponent
+        )
+    ) 
 }
-
-export default withWrappers(App);
+const WrappedApplicaiton  = withWrappers(App);
+export default WrappedApplicaiton;

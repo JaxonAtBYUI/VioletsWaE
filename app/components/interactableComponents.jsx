@@ -1,10 +1,20 @@
-import { StyleSheet, Text, TouchableHighlight, TouchableOpacity , TextInput, } from "react-native";
-import PhoneInput from "react-native-phone-number-input";
+import { useEffect, useState } from "react";
+import {
+    StyleSheet,
+    Text,
+    TouchableHighlight,
+    TouchableOpacity,
+    Keyboard,
+    TextInput,
+    View,
+    Dimensions,
+    TouchableWithoutFeedback
+} from "react-native";
 
 // Interactable Buttons
 
 /**
- * A touchable button that uses the Touchable Opacitity that is pre styled.
+ * A touchable button that uses the Touchable Opacity that is pre styled.
  * @param props.style - Can take in styles to overwrite default styling. 
  * @param props.action - The function that will be run when the button is pressed.
  * @returns {React.Component}
@@ -24,15 +34,12 @@ function ButtonOpacity(props) {
 function ButtonHighlight(props) {
     return (
         <TouchableHighlight 
-            style={[styles.buttonHighlight, props.style]}
-            onPress={props.action}
-        >
+        style={[styles.buttonHighlight, props.style]}
+        onPress={props.action}>
             <Text style={styles.buttonText}>{props.children}</Text>
         </TouchableHighlight>
     )
 }
-
-// Input Fields
 
 /**
  * A styled input field.
@@ -43,33 +50,11 @@ function ButtonHighlight(props) {
  */
 function TInputField(props) {
     return (
+        // Make it so that if the user taps off the box that it unfocuses the input.
         <TextInput
             placeholder={props.placeholder}
             onChangeText={props.action}
-            style={[styles.textInput, props.style]}
-        />
-    )
-}
-
-/**
- * A styled phone number input field.
- * @param props.placeholder - Placeholder text for the input field.
- * @param props.action - The function that runs whenever the text changes.
- * @param props.style - Styles to overwrite default styling.
- * @returns {React.Component}
- */
-function PInputField(props) {
-    return (
-        <PhoneInput
-            placeholder={props.placeholder}
-            onChangeText={props.action}
-            containerStyle={[styles.phoneInputContainer, props.style]}
-            textContainerStyle={[styles.phoneTextContainer]}
-            textInputStyle={[styles.phoneTextInput]}
-            defaultCode="US"
-            layout="2nd"
-            countryPickerButtonStyle={{display: "none"}}
-        />
+            style={[styles.textInput, props.style]}/>
     )
 }
 
@@ -78,7 +63,6 @@ const Interactables = {
     ButtonOpacity,
     ButtonHighlight,
     TInputField,
-    PInputField,
 }
 
 export default Interactables;
@@ -120,6 +104,12 @@ const styles = StyleSheet.create({
     },
     
     // Phone Input Garbage
+    dismiss: {
+        width: "100%",
+        flex: 1,
+        height: "100%",
+        backgroundColor: "yellow"
+    },
     phoneInputContainer: {
         width: "100%",
         backgroundColor: "FFFFFF00"
@@ -142,4 +132,9 @@ const styles = StyleSheet.create({
         width: '100%',
         height: "100%",
     },
-})
+    dismiss: {
+        width: "100%",
+        height: "100%",
+
+    }
+});

@@ -4,6 +4,7 @@ import SafeScreen from "../components/safeScreen";
 import TextComponents from "../components/textComponents";
 import Interactables from "../components/interactableComponents";
 import TopBar from "../components/topBar";
+import KeyboardAvoidingTextInput from "../components/keyboardAvoiding.jsx";
 
 export default function AccountScreen() {
     const screenWidth = Dimensions.get("screen").width
@@ -19,11 +20,9 @@ export default function AccountScreen() {
                     }}
                 />
             </View>
-            <View style={styles.fields}>
-                <Interactables.TInputField placeholder="Name" action={null}/>
-                <Interactables.TInputField placeholder="E-mail" action={null} />
-                <Interactables.PInputField placeholder="Phone Number" action={null} />
-            </View>
+                <KeyboardAvoidingTextInput placeholder="Name" action={null} styleContainer={styles.fields}/>
+                <KeyboardAvoidingTextInput placeholder="E-mail" action={null} styleContainer={styles.fields}/>
+                <KeyboardAvoidingTextInput placeholder="Phone Number" action={null} styleContainer={styles.fields}/>
         </SafeScreen>
     )
 }

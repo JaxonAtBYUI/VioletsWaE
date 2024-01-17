@@ -4,14 +4,18 @@ import { useState } from "react";
 import TextComponents from "../components/textComponents";
 import Interactables from "../components/interactableComponents";
 import SafeScreen from "../components/safeScreen";
+import KeyboardAvoidingTextInput from "../components/keyboardAvoiding";
+import { useNavigation } from "../contexts/NavigationContenxt";
+import { pages } from "../dictionaries/pages";
 
 export default function RegisterScreen() {
     const screenWidth = Dimensions.get("screen").width
-    const [Username, useUsername] = useState(null);
-    const [Password, usePassword] = useState(null);
-    const [ReEnter, useReEnter] = useState(null);
-    const [Email, useEmail] = useState(null);
+    const [Username, setUsername] = useState(null);
+    const [Password, setPassword] = useState(null);
+    const [ReEnter, setReEnter] = useState(null);
+    const [Email, setEmail] = useState(null);
 
+    const { navigateBack } = useNavigation();
 
     return (
         <SafeScreen style={styles.container}>
@@ -24,31 +28,29 @@ export default function RegisterScreen() {
                     }} />
                 <TextComponents.H1>Register</TextComponents.H1>
             </View>
-            <View style={styles.fields}>
-                <Interactables.TInputField 
-                   style={{width: "80%"}}
-                   placeholder="Username"
-                   action = {(value) => useUsername(value)} 
-                />
-                <Interactables.TInputField 
-                   style={{width: "80%"}}
-                   placeholder="Password"
-                   action = {(value) => usePassword(value)} 
-                />
-                <Interactables.TInputField 
-                   style={{width: "80%"}}
-                   placeholder="Re-enter Password"
-                   action = {(value) => useReEnter(value)} 
-                />
-                <Interactables.TInputField 
-                   style={{width: "80%"}}
-                   placeholder="Email"
-                   action = {(value) => useEmail(value)} 
-                />
-            </View>
+            <KeyboardAvoidingTextInput 
+            styleContainer={{width: "80%", alignSelf: "center"}}
+            placeholder="Username"
+            value={Username}
+            onChangeText={(value) => setUsername(value)}/>
+            <KeyboardAvoidingTextInput 
+            styleContainer={{width: "80%", alignSelf: "center"}}
+            placeholder="Password"
+            value={Password}
+            onChangeText={(value) => setPassword(value)}/>
+            <KeyboardAvoidingTextInput 
+            styleContainer={{width: "80%", alignSelf: "center"}}
+            placeholder="Re-enter Password"
+            value={ReEnter}
+            onChangeText={(value) => setReEnter(value)}/>
+            <KeyboardAvoidingTextInput 
+            styleContainer={{width: "80%", alignSelf: "center"}}
+            placeholder="E-mail"
+            value={Email}
+            onChangeText={(value) => setEmail(value)}/>
             <View style={styles.buttons}>
                 <Interactables.ButtonOpacity style={styles.button}>Register</Interactables.ButtonOpacity>
-                <Interactables.ButtonOpacity style={styles.button}>Go To Login</Interactables.ButtonOpacity>
+                <Interactables.ButtonOpacity style={styles.button} action={() => navigateBack(pages.login)}>Go To Login</Interactables.ButtonOpacity>
             </View>
         </SafeScreen>
     )

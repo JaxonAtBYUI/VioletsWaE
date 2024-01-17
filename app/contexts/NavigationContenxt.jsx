@@ -1,7 +1,10 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { pages } from '../dictionaries/pages';
+
+// Set the default landing page here
+const defaultLanding = pages.login
 
 const Navigation = createContext({});
-
 /**
  * @description A React component that provides a context to its child components.
  * @param {object} props - The props object.
@@ -24,15 +27,54 @@ const Navigation = createContext({});
  * }
  */
 function NavigationProvider({ children }) {
-  const [value, setValue] = useState('default value');
-  const contextValue = useMemo(() => ({
-    value, setValue,
-  }), [value, setValue]);
-  return (
-    <Navigation.Provider value={contextValue}>
-      {children}
-    </Navigation.Provider>
-  );
+
+    const stack = useRef([defaultLanding])
+    const [page, setPage] = useState(defaultLanding);
+    
+    function navigateTo(newPage) {
+        if (!Object.values(pages).includes(newPage)) {
+            console.log(`${newPage} is not a valid page.`);
+            return
+        }
+
+        stack.current.push(newPage)
+        setPage(newPage)
+    }
+
+    function navigateBack() {
+        if (stack.current.length < 1) {
+            console.log("No remaining page to navigate to.")
+            return
+        }
+
+        stack.current.pop()
+        setPage(stack.current.slice(-1)[0])
+    }
+    
+    function resetNavigation() {
+        stack.current = [defaultLanding]
+    }
+
+    function toggleNavigation(newPage) {
+        if (!Object.values(pages).includes(newPage)) {
+            console.log(`${newPage} is not a valid page.`);
+            return
+        }
+        
+        stack.current.pop()
+        stack.current.push(newPage)
+        setPage(newPage)
+    }
+
+    const contextValue = useMemo(() => ({
+        navigateTo, navigateBack, resetNavigation, toggleNavigation, page,
+    }), [page]);
+    
+    return (
+        <Navigation.Provider value={contextValue}>
+            {children}
+        </Navigation.Provider>
+    );
 }
 
 /**
@@ -50,11 +92,11 @@ function NavigationProvider({ children }) {
  * }
  */
 function useNavigation() {
-  const context = useContext(Navigation);
-  if (context === undefined) {
-    throw new Error('useNavigation was used outside of its Provider');
-  }
-  return context;
+    const context = useContext(Navigation);
+    if (context === undefined) {
+        throw new Error('useNavigation was used outside of its Provider');
+    }
+    return context;
 }
 
 /**
@@ -75,37 +117,13 @@ function withNavigation(WrappedComponent) {
 }
 
 export {
-  Navigation, NavigationProvider, useNavigation, withNavigation,
+    Navigation, NavigationProvider, useNavigation, withNavigation,
 };
 
+
+
 /*
-stack
-navigate to - adds to stack
-
-page = useState(pages.login);
-
-navigate back - removes top of stack
-clear nav history 
-
-
-import screen from screen.jsx
-
-useEffect(() => {
-    usePageComponent(components[page])
-}, [page])
-
-pages = {
-    login: "login",
-    register: "register"
-}
-
-components = {
-    "screen":
-    "login": 
-
-}
-
-
+This is what the App should eventually look like?
 import { useNavigationContext } from NavigationContext.jsx
 
 export default function App() {
@@ -117,6 +135,7 @@ export default function App() {
     )
 }
 
+Adding a nav button?
 import { useNavigationContext } from NavigationContext.jsx
 
 export default StupidScreen() {
@@ -124,7 +143,7 @@ export default StupidScreen() {
     const { navigateTo, pages } = useNavigationContext();
 
     return (
-        <button onPress={() => {navigateTo(pages.Login)}}/> // navigation button
+        <button onPress={() => {navigateTo(pages.login)}}/> // navigation button
     )
 }
 
