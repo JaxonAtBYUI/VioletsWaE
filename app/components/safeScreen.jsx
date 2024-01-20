@@ -1,5 +1,6 @@
 import { SafeAreaView, StyleSheet, KeyboardAvoidingView, Platform, StatusBar, Text, TouchableWithoutFeedback, View, Keyboard } from "react-native";
 import { DismissKeyboard } from "./interactableComponents";
+import { colorPallet } from "../dictionaries/styling";
 /* This is meant to make a view that only includes where it is
    safe to display items on the screen.
 */
@@ -23,6 +24,6 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         width: "100%",
         height: "100%",
-        backgroundColor: "green",
+        backgroundColor: colorPallet.background,
     },
 })

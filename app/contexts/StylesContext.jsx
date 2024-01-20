@@ -36,7 +36,7 @@ function StylesContextProvider({ children }) {
     });
 
     const contextValue = useMemo(() => ({
-    fontsLoaded
+    fontsLoaded,
     }), [fontsLoaded]);
     
     useEffect(() => (console.log(`Fonts loaded: ${fontsLoaded}`)), [fontsLoaded])
@@ -44,7 +44,7 @@ function StylesContextProvider({ children }) {
     return (
         
         <StylesContext.Provider value={contextValue}>
-        {children}
+            {children}
         </StylesContext.Provider>
     );
 }
@@ -78,7 +78,7 @@ function useStylesContext() {
  * @returns {React.Component} - The wrapped component with access to the template context.
  */
 function withStylesContext(WrappedComponent) {
-  return function NavigationComponent() {
+  return function StylesComponent() {
     return (
       <StylesContextProvider>
         <WrappedComponent />

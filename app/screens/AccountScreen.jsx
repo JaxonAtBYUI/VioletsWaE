@@ -1,16 +1,15 @@
 import { StyleSheet, View, Image, Dimensions } from "react-native";
-
 import SafeScreen from "../components/safeScreen";
 import TextComponents from "../components/textComponents";
 import Interactables from "../components/interactableComponents";
-import TopBar from "../components/topBar";
-import KeyboardAvoidingTextInput from "../components/keyboardAvoiding.jsx";
+import Header from "../components/header.jsx"
+import KeyboardAvoidingTextInput from "../components/flexibleKeyboardInput.jsx";
 
 export default function AccountScreen() {
     const screenWidth = Dimensions.get("screen").width
     return (
         <SafeScreen style={styles.container}>
-            <TopBar  backButton={true} title="Account"/>
+            <Header backButton={true} title="Account"/>
             <View style={styles.profilePic}>
                 <Image 
                     source={{

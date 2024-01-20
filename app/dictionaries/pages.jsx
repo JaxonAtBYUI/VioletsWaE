@@ -6,5 +6,6 @@ export const pages = {
     projectCreation: "projectCreation",
     projectSelection: "projectSelection",
     projectScreen: "projectScreen",
+    projectJoin: "projectJoin",
 
 }

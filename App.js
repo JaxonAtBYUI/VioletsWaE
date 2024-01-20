@@ -5,7 +5,8 @@ import { components } from './app/dictionaries/components';
 // Contexts
 import { withStylesContext, useStylesContext } from './app/contexts/StylesContext';
 import { withNavigation, useNavigation } from './app/contexts/NavigationContenxt';
-
+import { withUser } from './app/contexts/UserContext';
+// import { withUser, useUser } from './app/contexts/UserContext';
 
 
 function App() {
@@ -26,11 +27,15 @@ function App() {
 
 // Wrap the application in contexts
 function withWrappers(WrappedComponent) {
-    return withNavigation (
-        withStylesContext(
-            WrappedComponent
-        )
-    ) 
+    return (    
+        withUser(    
+            withNavigation (
+                    withStylesContext(
+                        WrappedComponent
+                    )
+                )
+        ) 
+    )
 }
 const WrappedApplicaiton  = withWrappers(App);
 export default WrappedApplicaiton;

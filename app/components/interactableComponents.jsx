@@ -10,6 +10,8 @@ import {
     Dimensions,
     TouchableWithoutFeedback
 } from "react-native";
+import { colorPallet } from "../dictionaries/styling";
+
 
 // Interactable Buttons
 
@@ -71,21 +73,22 @@ export default Interactables;
 const styles = StyleSheet.create({
     buttonOpacity: {
         padding: 10,
-        backgroundColor: "palegreen",
-        borderRadius: 10,
+        backgroundColor: colorPallet.lPrimary,
+        borderRadius: "50%",
         alignItems: "center",
     },
     buttonHighlight: {
         padding: 10,
-        backgroundColor: "palegreen",
+        backgroundColor: colorPallet.lPrimary,
         borderRadius: 10,
         justifyContent: "center",
         textAlign: "center",
         alignItems: "center",
     },
     buttonText: {
-        fontFamily: "Quicksand",
+        fontFamily: "Quicksand-Medium",
         fontSize: 28,
+        color: "white",
     },
     textInput: {
         borderRadius: 10,

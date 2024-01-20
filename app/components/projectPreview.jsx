@@ -1,4 +1,4 @@
-import { ScrollView } from "react-native"
+import { ScrollView, StyleSheet } from "react-native"
 
 export default function ProjectPreview({ items }) {
     return (

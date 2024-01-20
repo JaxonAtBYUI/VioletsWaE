@@ -3,7 +3,7 @@ import { ScrollView } from "react-native";
 import ProjectPreview from "../components/projectPreview";
 import SafeScreen from "../components/safeScreen";
 import TextComponents from "../components/textComponents";
-import TopBar from "../components/topBar";
+import Header from "../components/header";
 import Interactables from "../components/interactableComponents";
 
 import { useNavigation } from "../contexts/NavigationContenxt";
@@ -26,7 +26,7 @@ export default function ProjectCreationScreen() {
 
     return (
         <SafeScreen>
-            <TopBar backButton={false} title="Project Creation" />
+            <Header backButton={false} title="Project Creation" />
             <ScrollView>
                 <TextComponents.H3>Event Name</TextComponents.H3>
                 {/* TODO */}

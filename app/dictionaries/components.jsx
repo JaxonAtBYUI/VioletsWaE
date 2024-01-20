@@ -4,6 +4,7 @@ import AccountScreen from '../screens/AccountScreen';
 import ProjectCreationScreen from '../screens/ProjectCreationScreen';
 import ProjectSelectionScreen from '../screens/ProjectSelection';
 import ProjectScreen from '../screens/ProjectScreen';
+import ProjectJoinScreen from '../screens/ProjectJoinScreen';
 
 // Link enumerated value to components
 export const components = {
@@ -13,4 +14,5 @@ export const components = {
     "projectCreation": ProjectCreationScreen,
     "projectSelection": ProjectSelectionScreen,
     "projectScreen": ProjectScreen,
+    "projectJoin": ProjectJoinScreen,
 }
