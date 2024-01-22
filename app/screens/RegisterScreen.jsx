@@ -115,11 +115,13 @@ export default function RegisterScreen() {
         // Sign up user
         try {
             await signupWithEmailAndPassword(Email, Password, Name);
-            navigateBack();
         } catch (error) {
             setRegisterError("There was an error registering the user.");
-            console.log(error);
+            console.log(error);      
+            return;
         }
+
+        navigateBack();
     }
 
     return (

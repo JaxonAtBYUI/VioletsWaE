@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { firebaseAuth, firebaseDb } from '../../firebaseConfig';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 
 const UserContext = createContext({});
 
@@ -24,14 +27,14 @@ const UserContext = createContext({});
  * }
  */
 function UserContextProvider({ children }) {
-    const [user, setUser] = useState(null);
+    const [User, setUser] = useState(null);
 
     // Set up Firebase Auth state observer
     useEffect(() => {
-      const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
-        if (authUser) {
+      const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+        if (user) {
           // User is signed in
-          setUser(authUser);
+          setUser(user);
         } else {
           // User is signed out
           setUser(null);
@@ -45,7 +48,8 @@ function UserContextProvider({ children }) {
     // Function to log in with email and password
     const loginWithEmailAndPassword = async (email, password) => {
       try {
-        await firebase.auth().signInWithEmailAndPassword(email, password);
+        const { user } = await signInWithEmailAndPassword(firebaseAuth, email, password);
+        setUser(user);
       } catch (error) {
         console.error('Login Error:', error.message);
       }
@@ -55,19 +59,15 @@ function UserContextProvider({ children }) {
     const signupWithEmailAndPassword = async (email, password, name) => {
         try {
             // Create user with email and password
-            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        
-            // Optionally, you can do additional tasks like updating user profile
-            await userCredential.user.updateProfile({
-                displayName: 'New User', // Set a default display name
-            });
-      
-            await firestore.collection('users').doc(userCredential.user.uid).set({
+            const { user } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+            setUser(user);
+            
+            await setDoc(doc(firebaseDb, 'user', User.uid), {
                 name,
                 email,
-                phoneNumber: phoneNumber || null, // Optional, set to null if not provided
-                projects: [],
-            });
+                phoneNumber: null,
+                projects: []
+            })
       
         } catch (error) {
             console.error('Signup Error:', error.message);
@@ -77,20 +77,20 @@ function UserContextProvider({ children }) {
     // Function to log out
     const logout = async () => {
       try {
-        await firebase.auth().signOut();
+        await signOut(firebaseAuth);
       } catch (error) {
         console.error('Logout Error:', error.message);
       }
     };
-  
+
     // Function to get the current user
     const getCurrentUser = () => {
-      return firebase.auth().currentUser;
+      return firebaseAuth.currentUser;
     };
   
     // Expose context values
     const contextValues = {
-      user,
+      User,
       loginWithEmailAndPassword,
       signupWithEmailAndPassword,
       logout,
