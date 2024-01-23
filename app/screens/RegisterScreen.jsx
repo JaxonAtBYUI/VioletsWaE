@@ -12,6 +12,8 @@ import { pages } from "../dictionaries/pages";
 import { colorPallet } from "../dictionaries/styling";
 import { useUser } from "../contexts/UserContext";
 
+
+
 export default function RegisterScreen() {
     const screenWidth = Dimensions.get("screen").width
     const [Email, setEmail] = useState('');
@@ -22,6 +24,11 @@ export default function RegisterScreen() {
 
     const { navigateBack } = useNavigation();
     const { signupWithEmailAndPassword } = useUser();
+
+    // Testing register values
+    const testEmail = "test@email.com";
+    const testPassword = "IMTESTINGTHIS";
+    const testName = "Errors Suck"
 
     function isValidName() {
         const noNumberRegex = /^[^\d]+$/;
@@ -108,13 +115,13 @@ export default function RegisterScreen() {
 
     async function registerUser() {
         // Run checks that data is valid.
-        if (!isValidName()) return;
-        if (!isValidEmail()) return;
-        if (!isValidPassword()) return;
+        // if (!isValidName()) return;
+        // if (!isValidEmail()) return;
+        // if (!isValidPassword()) return;
 
         // Sign up user
         try {
-            await signupWithEmailAndPassword(Email, Password, Name);
+            await signupWithEmailAndPassword(testEmail, testPassword, testName);
         } catch (error) {
             setRegisterError("There was an error registering the user.");
             console.log(error);      

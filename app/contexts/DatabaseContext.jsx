@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useFonts } from "expo-font";
-const StylesContext = createContext({});
+import { useUser } from "./UserContext";
+
+const DatabaseContext = createContext({});
 
 /**
  * @description A React component that provides a context to its child components.
@@ -23,29 +24,28 @@ const StylesContext = createContext({});
  *   // Use value here
  * }
  */
-function StylesContextProvider({ children }) {
-  const [fontsLoaded] = useFonts({
-    Quicksand: require("../assets/fonts/Quicksand/Quicksand-VariableFont_wght.ttf"),
-    "Quicksand-Bold": require("../assets/fonts/Quicksand/static/Quicksand-Bold.ttf"),
-    "Quicksand-Light": require("../assets/fonts/Quicksand/static/Quicksand-Light.ttf"),
-    "Quicksand-Medium": require("../assets/fonts/Quicksand/static/Quicksand-Medium.ttf"),
-    "Quicksand-Regular": require("../assets/fonts/Quicksand/static/Quicksand-Regular.ttf"),
-    "Quicksand-SemiBold": require("../assets/fonts/Quicksand/static/Quicksand-SemiBold.ttf"),
-  });
+function DatabaseContextProvider({ children }) {
+  // This context must be wrapped in the auth context.
+  const { User } = useUser();
 
-  const contextValue = useMemo(
-    () => ({
-      fontsLoaded,
-    }),
-    [fontsLoaded]
-  );
+  async function getUserData() {
+    // Function for getting data from the "users" collection.
+    return;
+  }
 
-  useEffect(() => console.log(`Fonts loaded: ${fontsLoaded}`), [fontsLoaded]);
+  async function getProjects() {
+    // Function that returns all projects the user is a part of.
+    return;
+  }
+
+  async function getProject() {
+    // Return the project the user selects from the list of items to work on.
+  }
 
   return (
-    <StylesContext.Provider value={contextValue}>
+    <DatabaseContext.Provider value={contextValue}>
       {children}
-    </StylesContext.Provider>
+    </DatabaseContext.Provider>
   );
 }
 
@@ -63,10 +63,10 @@ function StylesContextProvider({ children }) {
  *   // ...
  * }
  */
-function useStylesContext() {
-  const context = useContext(StylesContext);
+function useDatabaseContext() {
+  const context = useContext(DatabaseContext);
   if (context === undefined) {
-    throw new Error("useStylesContext was used outside of its Provider");
+    throw new Error("useDatabaseContext was used outside of its Provider");
   }
   return context;
 }
@@ -77,19 +77,19 @@ function useStylesContext() {
  * @param {React.Component} WrappedComponent - The component to be wrapped with the NavigationContextProvider.
  * @returns {React.Component} - The wrapped component with access to the template context.
  */
-function withStylesContext(WrappedComponent) {
-  return function StylesComponent() {
+function withDatabaseContext(WrappedComponent) {
+  return function NavigationComponent() {
     return (
-      <StylesContextProvider>
+      <DatabaseContextProvider>
         <WrappedComponent />
-      </StylesContextProvider>
+      </DatabaseContextProvider>
     );
   };
 }
 
 export {
-  StylesContext,
-  StylesContextProvider,
-  useStylesContext,
-  withStylesContext,
+  DatabaseContext,
+  DatabaseContextProvider,
+  useDatabaseContext,
+  withDatabaseContext,
 };

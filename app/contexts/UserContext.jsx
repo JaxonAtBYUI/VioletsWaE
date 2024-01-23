@@ -1,7 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { firebaseAuth, firebaseDb } from '../../firebaseConfig';
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { firebaseAuth, firebaseDb } from "../../firebaseConfig";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 const UserContext = createContext({});
 
@@ -27,78 +32,130 @@ const UserContext = createContext({});
  * }
  */
 function UserContextProvider({ children }) {
-    const [User, setUser] = useState(null);
+  const [User, setUser] = useState(null);
+  const [UserInformation, setUserInformation] = useState(null);
 
-    // Set up Firebase Auth state observer
-    useEffect(() => {
-      const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-        if (user) {
-          // User is signed in
-          setUser(user);
-        } else {
-          // User is signed out
-          setUser(null);
-        }
-      });
-  
-      // Cleanup function
-      return () => unsubscribe();
-    }, []);
-  
-    // Function to log in with email and password
-    const loginWithEmailAndPassword = async (email, password) => {
-      try {
-        const { user } = await signInWithEmailAndPassword(firebaseAuth, email, password);
+  // Set up Firebase Auth state observer
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+      if (user) {
+        // User is signed in
         setUser(user);
-      } catch (error) {
-        console.error('Login Error:', error.message);
+      } else {
+        // User is signed out
+        setUser(null);
       }
-    };
-    
-    // Function to sign up with email and password.
-    const signupWithEmailAndPassword = async (email, password, name) => {
-        try {
-            // Create user with email and password
-            const { user } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-            setUser(user);
-            
-            await setDoc(doc(firebaseDb, 'user', User.uid), {
-                name,
-                email,
-                phoneNumber: null,
-                projects: []
-            })
-      
-        } catch (error) {
-            console.error('Signup Error:', error.message);
-        }
-    };
-  
-    // Function to log out
-    const logout = async () => {
-      try {
-        await signOut(firebaseAuth);
-      } catch (error) {
-        console.error('Logout Error:', error.message);
-      }
-    };
+    });
 
-    // Function to get the current user
-    const getCurrentUser = () => {
-      return firebaseAuth.currentUser;
-    };
-  
-    // Expose context values
-    const contextValues = {
-      User,
-      loginWithEmailAndPassword,
-      signupWithEmailAndPassword,
-      logout,
-      getCurrentUser,
-    };
-  
-    return <UserContext.Provider value={contextValues}>{children}</UserContext.Provider>;
+    // Cleanup function
+    return () => unsubscribe();
+  }, []);
+
+  // Function to log in with email and password
+  const loginWithEmailAndPassword = async (email, password) => {
+    try {
+      const { user } = await signInWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
+      setUser(user);
+    } catch (error) {
+      console.error("Login Error:", error.message);
+    }
   };
+
+  // Function to sign up with email and password.
+  const signupWithEmailAndPassword = async (email, password, name) => {
+    try {
+      
+      // Create user with email and password
+      const user = await createUserWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
+
+      // setUser(user);
+
+      // await setDoc(doc(firebaseDb, "users", User.uid), {
+      //   name,
+      //   email,
+      //   phoneNumber: null,
+      //   projects: [],
+      // });
+
+    } catch (error) {
+      console.error("Signup Error:", error.message);
+    }
+  };
+
+  // Function to log out
+  const logout = async () => {
+    try {
+      await signOut(firebaseAuth);
+    } catch (error) {
+      console.error("Logout Error:", error.message);
+    }
+  };
+
+  // Function to get the current user
+  const getCurrentUser = () => {
+    return firebaseAuth.currentUser;
+  };
+
+  const getUserInformation = () => {
+    return UserInformation;
+  }
+
+  // Function to get the userInformation from firebase
+  const retrieveCurrentUserInformation = async () => {
+    try {
+      const userDocument = await getDoc(doc(firebaseDb, 'users', User.uid));
+      if (userDocument.exists()) {
+        setUserInformation(userDocument.data());
+        return;
+      } else {
+        console.log('User document does not exist');
+        setUserInformation(null);
+        return;
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error.message);
+      return null;
+    }
+  }
+
+  // Function to updte the userInformation on firebase
+  const updateCurrentUserInformation = async () => {
+    try {
+      const userDocRef = doc(firebaseDb, 'users', User.uid);
+      await updateDoc(userDocRef, UserInformation);
+      console.log("User Data Updated Successfully");
+    } catch (error) {
+      console.error("User Information Update Error", error.message);
+    }
+  }
+
+  // Expose context values
+  const contextValues = {
+    User,
+    loginWithEmailAndPassword,
+    signupWithEmailAndPassword,
+    logout,
+    getCurrentUser,
+    getUserInformation,
+    setUserInformation,
+    retrieveCurrentUserInformation,
+    updateCurrentUserInformation,
+  };
+
+  return (
+    <UserContext.Provider value={contextValues}>
+      {children}
+    </UserContext.Provider>
+  );
+}
 
 /**
  * Custom hook that allows components to access the context provided by the TemplateContext context object.
@@ -117,7 +174,7 @@ function UserContextProvider({ children }) {
 function useUser() {
   const context = useContext(UserContext);
   if (context === undefined) {
-    throw new Error('useUser was used outside of its Provider');
+    throw new Error("useUser was used outside of its Provider");
   }
   return context;
 }
@@ -138,6 +195,4 @@ function withUser(WrappedComponent) {
   };
 }
 
-export {
-  UserContext, UserContextProvider, useUser, withUser,
-};
+export { UserContext, UserContextProvider, useUser, withUser };
