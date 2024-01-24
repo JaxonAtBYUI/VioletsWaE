@@ -1,104 +1,90 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Stitch, AnonymousCredential } from 'mongodb-stitch-react-native-sdk';
 
 const UserContext = createContext({});
 
-/**
- * @description A React component that provides a context to its child components.
- * @param {object} props - The props object.
- * @param {ReactNode} props.children - The child components that will have access to the context.
- * @returns {ReactNode} The rendered component.
- * @example
- * import { TemplateContextProvider } from './templateContext';
- *
- * function App() {
- *   return (
- *     <TemplateContextProvider>
- *       // Your app components
- *     </TemplateContextProvider>
- *   );
- * }
- * @example
- * function MyComponent() {
- *   const { value } = useContext(TemplateContext);
- *   // Use value here
- * }
- */
-function UserContextProvider({ children }) {
-    const [user, setUser] = useState(null);
+// Initialize MongoDB Realm App
+const appId = process.env.EXPO_PUBLIC_MONGODB_APP_ID;
+const client = Stitch.initializeDefaultAppClient(appId);
 
-    // Set up Firebase Auth state observer
-    useEffect(() => {
-      const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
-        if (authUser) {
-          // User is signed in
-          setUser(authUser);
-        } else {
-          // User is signed out
-          setUser(null);
-        }
-      });
-  
-      // Cleanup function
-      return () => unsubscribe();
-    }, []);
-  
-    // Function to log in with email and password
-    const loginWithEmailAndPassword = async (email, password) => {
-      try {
-        await firebase.auth().signInWithEmailAndPassword(email, password);
-      } catch (error) {
-        console.error('Login Error:', error.message);
+function UserContextProvider({ children }) {
+  const [user, setUser] = useState(null);
+
+  // Set up MongoDB Realm Auth state observer
+  useEffect(() => {
+    const authListener = client.auth.addAuthListener((auth) => {
+      if (auth.isLoggedIn) {
+        setUser(auth.user);
+      } else {
+        setUser(null);
       }
-    };
-    
-    // Function to sign up with email and password.
-    const signupWithEmailAndPassword = async (email, password, name) => {
-        try {
-            // Create user with email and password
-            const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        
-            // Optionally, you can do additional tasks like updating user profile
-            await userCredential.user.updateProfile({
-                displayName: 'New User', // Set a default display name
-            });
-      
-            await firestore.collection('users').doc(userCredential.user.uid).set({
-                name,
-                email,
-                phoneNumber: phoneNumber || null, // Optional, set to null if not provided
-                projects: [],
-            });
-      
-        } catch (error) {
-            console.error('Signup Error:', error.message);
-        }
-    };
-  
-    // Function to log out
-    const logout = async () => {
-      try {
-        await firebase.auth().signOut();
-      } catch (error) {
-        console.error('Logout Error:', error.message);
-      }
-    };
-  
-    // Function to get the current user
-    const getCurrentUser = () => {
-      return firebase.auth().currentUser;
-    };
-  
-    // Expose context values
-    const contextValues = {
-      user,
-      loginWithEmailAndPassword,
-      signupWithEmailAndPassword,
-      logout,
-      getCurrentUser,
-    };
-  
-    return <UserContext.Provider value={contextValues}>{children}</UserContext.Provider>;
+    });
+
+    return () => authListener.remove(); // Cleanup function
+  }, []);
+
+  // Function to log in with email and password
+  const loginWithEmailAndPassword = async (email, password) => {
+    try {
+      await client.auth.loginWithCredential(new UserPasswordCredential(email, password));
+    } catch (error) {
+      console.error('Login Error:', error.message);
+    }
   };
+
+  // Function to sign up with email and password
+  const signupWithEmailAndPassword = async (email, password, name) => {
+    try {
+      const user = await client.auth.registerUser({
+        email,
+        password,
+      });
+
+      // Optionally, you can update user profile
+      await client.auth.loginWithCredential(new UserPasswordCredential(email, password));
+
+      // Add user data to MongoDB collection
+      const usersCollection = client
+        .getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas')
+        .db('your-database-name')
+        .collection('users');
+
+      await usersCollection.insertOne({
+        _id: user.id,
+        name,
+        email,
+        projects: [],
+      });
+    } catch (error) {
+      console.error('Signup Error:', error.message);
+    }
+  };
+
+  // Function to log out
+  const logout = async () => {
+    try {
+      await client.auth.logout();
+    } catch (error) {
+      console.error('Logout Error:', error.message);
+    }
+  };
+
+  // Function to get the current user
+  const getCurrentUser = () => {
+    return client.auth.isLoggedIn ? client.auth.user : null;
+  };
+
+  // Expose context values
+  const contextValues = {
+    user,
+    loginWithEmailAndPassword,
+    signupWithEmailAndPassword,
+    logout,
+    getCurrentUser,
+  };
+
+  return <UserContext.Provider value={contextValues}>{children}</UserContext.Provider>;
+}
 
 /**
  * Custom hook that allows components to access the context provided by the TemplateContext context object.
