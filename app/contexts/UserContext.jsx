@@ -1,60 +1,27 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Stitch, AnonymousCredential } from 'mongodb-stitch-react-native-sdk';
 
 const UserContext = createContext({});
 
-// Initialize MongoDB Realm App
-const appId = process.env.EXPO_PUBLIC_MONGODB_APP_ID;
-const client = Stitch.initializeDefaultAppClient(appId);
-
 function UserContextProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [User, setUser] = useState(null);
 
-  // Set up MongoDB Realm Auth state observer
+  // Checks authentication
   useEffect(() => {
-    const authListener = client.auth.addAuthListener((auth) => {
-      if (auth.isLoggedIn) {
-        setUser(auth.user);
-      } else {
-        setUser(null);
-      }
-    });
 
-    return () => authListener.remove(); // Cleanup function
   }, []);
 
   // Function to log in with email and password
   const loginWithEmailAndPassword = async (email, password) => {
     try {
-      await client.auth.loginWithCredential(new UserPasswordCredential(email, password));
     } catch (error) {
-      console.error('Login Error:', error.message);
+
     }
   };
 
   // Function to sign up with email and password
   const signupWithEmailAndPassword = async (email, password, name) => {
     try {
-      const user = await client.auth.registerUser({
-        email,
-        password,
-      });
 
-      // Optionally, you can update user profile
-      await client.auth.loginWithCredential(new UserPasswordCredential(email, password));
-
-      // Add user data to MongoDB collection
-      const usersCollection = client
-        .getServiceClient(RemoteMongoClient.factory, 'mongodb-atlas')
-        .db('your-database-name')
-        .collection('users');
-
-      await usersCollection.insertOne({
-        _id: user.id,
-        name,
-        email,
-        projects: [],
-      });
     } catch (error) {
       console.error('Signup Error:', error.message);
     }
@@ -63,20 +30,20 @@ function UserContextProvider({ children }) {
   // Function to log out
   const logout = async () => {
     try {
-      await client.auth.logout();
+
     } catch (error) {
-      console.error('Logout Error:', error.message);
+
     }
   };
 
   // Function to get the current user
   const getCurrentUser = () => {
-    return client.auth.isLoggedIn ? client.auth.user : null;
+
   };
 
   // Expose context values
   const contextValues = {
-    user,
+    User,
     loginWithEmailAndPassword,
     signupWithEmailAndPassword,
     logout,
